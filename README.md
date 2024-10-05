@@ -1,110 +1,96 @@
 # Journal
+Journal is a C project for a Bachelor Degree course that allows formatting a text file (given parameters) to resemble newspaper-style columns.
 
-Journal è un progetto scritto in C che permette (partendo da un file di testo e dei parametri) di incolonnare un testo in stile giornale.
-
-## Installation
-
-Per compilare il programma basta posizionarsi con il terminale nella cartella in cui è salvato e digitare il comando:
+Installation
+To compile the program, navigate to the folder where the source code is located and type the following command in the terminal:
 ```make``` 
-Verrà generato un eseguibile all'interno della stessa cartella.
+An executable file will be generated in the same directory.
 
-Per cancellare l'eseguibile è possibile utilizzare il comando:
+To delete the executable file, you can use the following command:
+
 ```bash
 make clean
 ``` 
 
 ## Usage
 
-Per eseguire il programma basta digitare da terminale:
+To run the program, use the following command in the terminal:
 
 ```bash
 ./journal
-``` 
-Seguito dai seguenti parametri:
+```
+Followed by the parameters:
+- File name (specify the relative or absolute path): string
+- Number of rows per column (>0): int (length of a column)
+- Number of characters per column (>0): int (width of a column)
+- Number of columns per page (>0): int (width of the page)
+- Number of spaces between columns (>0): int (spacing between columns)
 
-- Nome del file (specificando il path relativo o assoluto): stringa
-- il numero (>0) di righe per colonna (lunghezza di una colonna): int
-- il numero (>0) di caratteri per colonna; (larghezza della singola colonna): int   
-- il numero (>0) di colonne per pagina;    (larghezza della pagina): int      
-- il numero (>0) di spazi delimitatori tra le colonne (distanza tra le colonne): int
+Any error during parameter insertion will be reported on the screen, specifying which parameter was invalid.
 
-Un eventuale **errore** in fase di inserimento sarà segnalato a schermo specificando quale parametro inserito non è stato approvato.
+Possible parameter input errors:
+- Unable to open the file with the provided name
+- A numerical character was input instead of the file name
+- A character or string was entered instead of an integer
+- The integer corresponding to a numerical parameter is <= 0
+- A word in the file is longer than the column width parameter
 
-Possibili problemi che si potrebbero presentare nell'inserimento dei parametri:
-- impossibile aprire il file con il nome fornito in input
-- al posto del nome del file è stato digitato un carattere numerico
-- al posto di un intero è stato digitato un carattere o una stringa
-- l'intero corrispondente a un parametro numerico risulta <= 0
-- All'interno del file è stata trovata una parola di lunghezza maggiore rispetto al parametro della larghezza della colonna 
 
 ## Examples
 
-Per esempio il seguente codice esegue il programma fornendo:
-- Nome del file -> 'file.txt';
-- Numero di righe per colonna -> 10;
-- Numero di caratteri per colonna -> 25;
-- Numero di colonne per pagina -> 5
-- Numero di spazi delimitatori tra le colonne -> 8
+For example, the following code executes the program with:
 
+- File name -> file.txt
+- Number of rows per column -> 10
+- Number of characters per column -> 25
+- Number of columns per page -> 5
+- Number of spaces between columns -> 8
 ```bash
 ./journal file.txt 10 25 5 8
 ``` 
 
 ## Composition
 
-Il progetto è formato da 5 file: 
+The project consists of 5 files:
 
-- journal.c 
-    E' il file in cui è situtato il main del programma, legge il file di input e compone le singole righe che andranno poi a comporre le singole righe delle colonne nel file di output.
+- journal.c This file contains the main program. It reads the input file and assembles individual lines that will make up the rows of the columns in the output file.
 
-- struct.c 
-    E' il file in cui vengono gestite tutte le operazioni relative la gestione della struttura dati 
-    (inserimento di righe, creazione colonne, liberazione della memoria, conto di righe e colonne).
-    Una funzione di questo file si occupa anche della scrittura su file di una pagina quando ne è terminata la composizione. 
+- struct.c This file manages all operations related to the data structure (inserting rows, creating columns, memory deallocation, counting rows and columns). It also includes a function to write a page to the file once the page composition is complete.
 
-- manage_text.c
-    All'interno di questo file ci sono le funzioni per la manipolazione delle stringhe 
-    (allineamento, conto dei caratteri effettivi, controllo se un carattere è UTF-8 o meno e anche la copia di una sottostringa).
+- manage_text.c This file contains functions for string manipulation (alignment, counting effective characters, checking if a character is UTF-8 or not, and copying substrings).
 
-- struct.h
-    File header in cui si definiscono le struct dei nodi delle liste puntate delle colonne e delle righe. 
-    Sono presenti le signatures delle funzioni che vengono implementate nel file struct.c
+- struct.h This header file defines the structures of the linked list nodes for columns and rows. It also includes function signatures implemented in struct.c.
 
-- manage_text.h
-    Sono presenti le signatures delle funzioni che vengono implementate nel file manage_text.c
+- manage_text.h This header file contains the function signatures implemented in manage_text.c.
+
 
 ## Versions
 
-#### monoprocesso
-#### multiprocesso
+There are two versions available:
 
-Queste due versioni si trovano rispettivamente nella cartella singleProcess e multiProcess.
+#### Single-process
+#### Multi-process
+These versions can be found in the singleProcess and multiProcess directories, respectively.
 
-Il funzionamento, la struttura e l'algoritmo cardine è identico, si differenziano per l'uso di un processi e 3 processi concorrenti.
+Both versions share the same structure, core algorithm, and functionality, but they differ in how they manage processes. The multi-process version uses 3 concurrent processes.
 
-Il multiprocesso è stato implementato nel file journal.c e nel file struct.c. tramite 3 processi: il processo padre e quello figlio.
+The multi-process version is implemented in journal.c and struct.c using 3 processes: the parent and child processes.
 
-Il padre legge dal file input un byte e lo scrive in una pipe;
-
-il figlio legge un byte alla volta tramite la pipe, gestisce la riga e la passa richiama la funzione addRow che permette di aggiungere una riga alla struttura dati. 
-
-Se il numero massimo di colonne della pagina e di righe dell'ultima colonna sono stati raggiunti allora il processo figlio crea un processo figlio che si occupa di scrivere la pagina mentre suo padre continua a formattare righe.
+- The parent process reads one byte at a time from the input file and writes it to a pipe.
+- The child process reads the bytes from the pipe, processes them into rows, and calls the addRow function to add a row to the data structure.
+- If the maximum number of columns per page and rows in the last column is reached, the child process creates another child process to write the page, while the parent continues formatting rows.
 
 ## Libraries used
 
 Tutte le librerie utilizzate sono standard C.
 
-**stdio.h**: Libreria per le operazioni di input/output standard. Utilizzata per printf().
+All libraries used are standard C libraries.
 
-**stdlib.h**: Libreria che fornisce funzioni per l'allocazione di memoria dinamica, la gestione degli errori e altre funzioni di utilità. Utilizzata per malloc() e exit().
-
-**string.h**: Libreria che contiene funzioni per la manipolazione di stringhe. Utilizzata per strcpy() e strlen().
-
-**unistd.h**: Libreria per l'accesso alle funzioni del sistema operativo Unix, come la gestione dei processi e delle pipe. Utilizzata per fork() e pipe().
-
-**sys/wait.h**: Libreria per la gestione dei processi, utilizzata per la funzione wait() per attendere la terminazione di un processo figlio.
-
-**fcntl.h**: Libreria per la gestione dei descrittori di file, inclusa la funzione. Utilizzata per open() per aprire e creare file.
-
+- **stdio.h**: Standard input/output library. Used for printf().
+- **stdlib.h**: Provides functions for dynamic memory allocation, error handling, and utility functions. Used for malloc() and exit().
+- **string.h**: Contains functions for string manipulation. Used for strcpy() and strlen().
+- **unistd.h**: Provides access to Unix operating system functions, such as process and pipe management. Used for fork() and pipe().
+- **sys/wait.h**: Library for process management, used for wait() to wait for a child process to terminate.
+- **fcntl.h**: Library for file descriptor management, used for open() to open and create files.
 
 _@author: Francesco D'Aprile_
