@@ -112,5 +112,5 @@ This project demonstrates efficient journal management using both single-process
 
 ---
 
-Feel free to contribute, suggest improvements, or raise issues on the [GitHub repository](https://github.com/your-username/journal-management).
+Feel free to contribute, suggest improvements, or raise issues on the [GitHub repository]([https://github.com/fraadap/Journal/).
 
